@@ -1,2 +1,2 @@
-# php-mysql
-Custom methods are used to operate MySQL by PHP
+# Requirement
+PHP 5.3+ and PDO extension installed
