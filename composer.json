@@ -1,0 +1,8 @@
+{
+    "name": "zhangzhaowy/php-mysql",
+    "description": "php mysql",
+    "type": "project",
+    "license": "MIT",
+    "minimum-stability": "dev",
+    "require": {}
+}
