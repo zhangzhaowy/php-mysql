@@ -37,13 +37,13 @@ $db = new Db('host', 'username', 'password', 'databaseName');
 还可以用数组来初始化:
 ```php
 $db = new Db([
-                'host' => 'host',
-                'username' => 'username', 
-                'password' => 'password',
-                'db'=> 'databaseName',
-                'port' => 3306,
-                'prefix' => 'my_',
-                'charset' => 'utf8']);
+    'host' => 'host',
+    'username' => 'username', 
+    'password' => 'password',
+    'db'=> 'databaseName',
+    'port' => 3306,
+    'prefix' => 'my_',
+    'charset' => 'utf8']);
 ```
 表前缀、字符集、端口参数都是可选的。
 
@@ -66,19 +66,19 @@ $db->autoReconnect = false;
 
 如果想使用已经创建过的数据库链接：
 ```php
-    // 创建过的Mysql链接
-    $db = new Db('host', 'username', 'password', 'databaseName');
-    ...
-    ...
-    // 要启用创建过的Mysql链接
-    $db = Db::getInstance();
-    ...
+// 创建过的Mysql链接
+$db = new Db('host', 'username', 'password', 'databaseName');
+...
+...
+// 要启用创建过的Mysql链接
+$db = Db::getInstance();
+...
     
 ```
 
 ### 基本操作
 
-## 增加
+#### 增加
 ```php
 $data = [
     "login" => "admin",
@@ -107,5 +107,5 @@ $db->onDuplicate($updateColumns, $lastInsertId);
 $id = $db->table('users')->insert($data);
 ```
 
-## 替换
+#### 替换
 <a href='https://dev.mysql.com/doc/refman/5.0/en/replace.html'>replace()</a> 同 insert() 方法一样;
