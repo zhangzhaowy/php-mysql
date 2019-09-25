@@ -1,14 +1,14 @@
 MySQLi 封装类
 <hr>
 
-## 声明
+# 声明
 
 此软件是为了满足个人使用习惯而在[ThingEngineer/PHP-MySQLi-Database-Class](https://github.com/ThingEngineer/PHP-MySQLi-Database-Class)的基础上开发的. 如果你想学习或研究MYSQL，可以去[ThingEngineer/PHP-MySQLi-Database-Class](https://github.com/ThingEngineer/PHP-MySQLi-Database-Class).
 
 # 环境要求
 PHP 5.4+ and PDO extension installed
 
-### 安装
+# 安装
 使用之前需要先下载或安装到自己的项目
 
 composer 安装
@@ -16,7 +16,7 @@ composer 安装
 composer require zhangzhaowy/php-mysql:dev-master
 ```
 
-### 加载
+# 加载
 
 引入类文件
 ```php
@@ -28,7 +28,7 @@ require_once ('Db.php');
 use Zhangzhaowy\Phpmysql\Db;
 ```
 
-### 初始化
+# 初始化
 默认 字符集utf8，端口3306:
 ```php
 $db = new Db('host', 'username', 'password', 'databaseName');
@@ -76,9 +76,9 @@ $db = Db::getInstance();
     
 ```
 
-### 基本操作
+# 基本操作
 
-#### 增加
+## 增加
 ```php
 $data = [
     "login" => "admin",
@@ -107,5 +107,5 @@ $db->onDuplicate($updateColumns, $lastInsertId);
 $id = $db->table('users')->insert($data);
 ```
 
-#### 替换
+## 替换
 <a href='https://dev.mysql.com/doc/refman/5.0/en/replace.html'>replace()</a> 同 insert() 方法一样;
