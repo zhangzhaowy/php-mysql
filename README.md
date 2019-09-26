@@ -135,9 +135,9 @@ if($db->table('users')->delete()) {
 ## 查询
 
 ### 获取数据
-getAll() 获取多条记录
-getOne() 获取一条记录
-getColumn() 获取某列数据
+getAll() 获取多条记录  
+getOne() 获取一条记录  
+getColumn() 获取某列数据  
 ```php
 // 包含全部用户
 $users = $db->from('users')->getAll();
