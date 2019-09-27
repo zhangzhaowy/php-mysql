@@ -289,7 +289,7 @@ $users = $db->from('users')->asJson()->getAll();
 
 ### Total Count
 ```php
-// $db->from('users')->limit('0,2')->withTotalCount()->getAll();
+$db->from('users')->limit('0,2')->withTotalCount()->getAll();
 // 结果输出2条数据
 // $db->totalCount 显示总记录数
 ```
@@ -328,3 +328,99 @@ $db->from('users')->where(['id', 'in', $sub])->getAll();
 $users = $db->query('select * from my_users limit 1');
 ```
 
+### 事务
+```php
+try {
+    // 开启事务
+    $db->startTransaction();
+
+    // 插入一条数据
+    $id = $db->table('users')->insert(['name' => 'user', 'age' => 10]);
+    if ($id <= 0) {
+        // 失败，报错
+        throw new \Exception('ERROR:'.$db->getLastErrno().' '.$db->getLastError());
+    }
+
+    // 提交
+    $db->commit();
+} catch(\Exception $e) {
+    // 获取错误消息
+    // $e->getMessage();
+    // 回滚
+    $db->rollback();
+}
+```
+
+### Trace
+跟踪SQL、执行时间、文件位置
+```php
+$db->setTrace(true);
+$db->from('users')->getAll();
+$db->from('users')->select(['id', 'name'])->getOne();
+var_dump($db->trace);
+// 打印输出结果
+// [
+//     0 => [
+//         0 => 'SELECT * FROM my_users',
+//         1 => 0.020965814590454,
+//         2 => 'Zhangzhao\Phpmysql\Db->getAll() >>  file "**\controller\Test.php" line #214'
+//     ],
+//     1 => [
+//         0 => 'SELECT  id,name FROM my_users LIMIT 1',
+//         1 => 0.0006251335144043,
+//         2 => 'Zhangzhao\Phpmysql\Db->getOne() >>  file "**\controller\Test.php" line #215'
+//     ],
+// ]
+```
+
+### SQL 关键词
+LOW_PRIORITY | DELAYED | HIGH_PRIORITY | IGNORE
+ALL | DISTINCT | DISTINCTROW | STRAIGHT_JOIN | SQL_SMALL_RESULT | SQL_BIG_RESULT | SQL_BUFFER_RESULT | SQL_CACHE | SQL_NO_CACHE | SQL_CALC_FOUND_ROWS | QUICK | MYSQLI_NESTJOIN
+FOR UPDATE | LOCK IN SHARE MODE
+```php
+$db->table($table)->setQueryOption('LOW_PRIORITY')->insert($param);
+// INSERT LOW_PRIORITY INTO table ...
+```
+```php
+$db->table($table)->setQueryOption('FOR UPDATE')->get('users');
+// SELECT * FROM my_users FOR UPDATE;
+```
+
+多个关键词一起用
+```php
+$db->table($table)->setQueryOption(['LOW_PRIORITY', 'IGNORE'])->insert($param);
+// INSERT LOW_PRIORITY IGNORE INTO table ...
+```
+
+### 错误
+SQL执行完成之后，需要执行下面的方法判断是否成功。 
+```php
+if ($db->getLastErrno() === 0)
+    echo 'Succesfull';
+else
+    echo 'Failed. Error: '. $db->getLastError();
+```
+
+### 帮助方法
+关闭数据库连接
+```php
+    $db->disconnect();
+```
+
+数据库连接断开时重新连接
+```php
+if (!$db->ping())
+    $db->connect()
+```
+
+获取最后一次执行的SQL
+注：函数返回SQL查询仅用于调试目的，因为它的执行很可能会由于字符变量周围缺少引号而失败。
+```php
+    $db->get('users');
+    echo "Last executed query was ". $db->getLastQuery();
+```
+
+转义字符串方法
+```php
+    $escaped = $db->escape("' and 1=1");
+```
