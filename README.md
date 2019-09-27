@@ -404,7 +404,7 @@ else
 ### 帮助方法
 关闭数据库连接
 ```php
-    $db->disconnect();
+$db->disconnect();
 ```
 
 数据库连接断开时重新连接
@@ -416,11 +416,11 @@ if (!$db->ping())
 获取最后一次执行的SQL
 注：函数返回SQL查询仅用于调试目的，因为它的执行很可能会由于字符变量周围缺少引号而失败。
 ```php
-    $db->get('users');
+$db->get('users');
     echo "Last executed query was ". $db->getLastQuery();
 ```
 
 转义字符串方法
 ```php
-    $escaped = $db->escape("' and 1=1");
+$escaped = $db->escape("' and 1=1");
 ```
