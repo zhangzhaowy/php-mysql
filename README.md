@@ -86,10 +86,11 @@ $data = [
     "lastName" => 'Doe'
 ];
 $id = $db->table('users')->insert($data);
-if($id)
+if($id) {
     echo 'user was created. Id=' . $id;
-else
+} else {
     echo 'insert failed: ' . $db->getLastError();
+}
 ```
 
 在Insert中使用on duplicate key update
@@ -118,10 +119,11 @@ $data = [
     'lastName' => 'Tables',
 ];
 $db->where('id', 1)->limit(1);
-if ($db->table('users')->update($data))
+if ($db->table('users')->update($data)) {
     echo $db->count . ' records were updated';
-else
+} else {
     echo 'update failed: ' . $db->getLastError();
+}
 ```
 
 ## 删除
@@ -295,7 +297,9 @@ $db->from('users')->limit('0,2')->withTotalCount()->getAll();
 ```
 
 ### 分页
-paginate() 分页。第一个参数是页数，第二个参数是每页记录数量（默认20）。
+paginate() 分页  
+第一个参数是页数  
+第二个参数是每页记录数量（默认20）。
 ```php
 // 每页显示5条，显示第一页数据
 $users = $db->from('users')->paginate(1, 5);
@@ -324,6 +328,7 @@ $db->from('users')->where(['id', 'in', $sub])->getAll();
 ```
 
 ### Query
+直接通过Query获取结果
 ```php
 $users = $db->query('select * from my_users limit 1');
 ```
@@ -374,6 +379,7 @@ var_dump($db->trace);
 ```
 
 ### SQL 关键词
+支持的关键词包括：  
 LOW_PRIORITY | DELAYED | HIGH_PRIORITY | IGNORE
 ALL | DISTINCT | DISTINCTROW | STRAIGHT_JOIN | SQL_SMALL_RESULT | SQL_BIG_RESULT | SQL_BUFFER_RESULT | SQL_CACHE | SQL_NO_CACHE | SQL_CALC_FOUND_ROWS | QUICK | MYSQLI_NESTJOIN
 FOR UPDATE | LOCK IN SHARE MODE
@@ -395,10 +401,11 @@ $db->table($table)->setQueryOption(['LOW_PRIORITY', 'IGNORE'])->insert($param);
 ### 错误
 SQL执行完成之后，需要执行下面的方法判断是否成功。 
 ```php
-if ($db->getLastErrno() === 0)
+if ($db->getLastErrno() === 0) {
     echo 'Succesfull';
-else
+} else {
     echo 'Failed. Error: '. $db->getLastError();
+}
 ```
 
 ### 帮助方法
@@ -409,15 +416,16 @@ $db->disconnect();
 
 数据库连接断开时重新连接
 ```php
-if (!$db->ping())
-    $db->connect()
+if (!$db->ping()) {
+    $db->connect();
+}
 ```
 
-获取最后一次执行的SQL
+获取最后一次执行的SQL  
 注：函数返回SQL查询仅用于调试目的，因为它的执行很可能会由于字符变量周围缺少引号而失败。
 ```php
 $db->get('users');
-    echo "Last executed query was ". $db->getLastQuery();
+echo "Last executed query was ". $db->getLastQuery();
 ```
 
 转义字符串方法
