@@ -1,5 +1,5 @@
 <?php
-namespace Zhangzhao\Phpmysql;
+namespace Zhangzhaowy\Phpmysql;
 
 class Db
 {
