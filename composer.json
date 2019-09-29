@@ -1,8 +1,26 @@
 {
     "name": "zhangzhaowy/php-mysql",
     "description": "php mysql",
+    "keywords": ["php", "mysql"],
     "type": "library",
     "license": "MIT",
     "minimum-stability": "dev",
-    "require": {}
+    "authors": [
+        {
+            "name": "zhangzhao",
+            "email": "zhangzhaowy@163.com"
+        }
+    ],
+    "require": {
+    	"ext-pdo": "*",
+        "php": "^5.4|^7.0"
+    },
+    "suggest": {
+		"ext-pdo_mysql": "For MySQL or MariaDB databases"
+	},
+    "autoload": {
+        "psr-4": {
+            "Zhangzhaowy\\Phpmysql\\": "/src"
+        }
+    }
 }
