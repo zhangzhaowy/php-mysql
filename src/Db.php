@@ -3,35 +3,35 @@ namespace Zhangzhaowy\Phpmysql;
 
 class Db
 {
-	protected static $_instance;
+    protected static $_instance;
     protected $isSubQuery = false;
-	protected $subQueryAlias = null;
-	protected $dbLink = null;
-	protected $prefix = '';
-	protected $_query;
-	protected $_queryOptions = [];
-	protected $_bindParams = [];
-	protected $_nestJoin = false;
-	protected $_forUpdate = false;
-	protected $_lockInShareMode = false;
-	protected $_where = [];
-	protected $_having = [];
-	protected $_join = [];
-	protected $_joinAnd = [];
-	protected $_groupBy = [];
-	protected $_orderBy = [];
-	protected $_lastInsertId = null;
-	protected $_updateColumns = null;
+    protected $subQueryAlias = null;
+    protected $dbLink = null;
+    protected $prefix = '';
+    protected $_query;
+    protected $_queryOptions = [];
+    protected $_bindParams = [];
+    protected $_nestJoin = false;
+    protected $_forUpdate = false;
+    protected $_lockInShareMode = false;
+    protected $_where = [];
+    protected $_having = [];
+    protected $_join = [];
+    protected $_joinAnd = [];
+    protected $_groupBy = [];
+    protected $_orderBy = [];
+    protected $_lastInsertId = null;
+    protected $_updateColumns = null;
     protected $_lastQuery;
-	protected $_tableName = '';
+    protected $_tableName = '';
     protected $_limit = null;
     protected $_columns = '';
     protected $_mapKey = null;
     // 启用事务
     protected $_transaction_in_progress = false;
 
-	// 用于查询执行跟踪的变量
-	protected $traceStartQ;
+    // 用于查询执行跟踪的变量
+    protected $traceStartQ;
     protected $traceEnabled;
     protected $traceStripPrefix;
     public $trace = array();
@@ -59,16 +59,16 @@ class Db
     // 总页数
     public $totalPages = 0;
 
-	private $hostname = null;
-	private $username = null;
-	private $password = null;
-	private $database = null;
-	private $port = null;
-	private $charset = null;
-	private $socket = null;
+    private $hostname = null;
+    private $username = null;
+    private $password = null;
+    private $database = null;
+    private $port = null;
+    private $charset = null;
+    private $socket = null;
 
-	public function __construct($hostname = null, $username = null, $password = null, $database = null, $port = 3306, $charset = 'utf8', $socket = null)
-	{
+    public function __construct($hostname = null, $username = null, $password = null, $database = null, $port = 3306, $charset = 'utf8', $socket = null)
+    {
         $isSubQuery = false;
         $subQueryAlias = null;
         $prefix = null;
@@ -109,14 +109,14 @@ class Db
             $this->charset    = $charset;
         }
 
-		self::$_instance  = $this;
-	}
+        self::$_instance  = $this;
+    }
 
     /*
      * 返回静态实例以允许从另一个类中访问已实例化过的方法
      * 注：需要重新加载连接信息
      */
-	public static function getInstance()
+    public static function getInstance()
     {
         if(isset(self::$_instance)) {
             return self::$_instance;
@@ -128,31 +128,31 @@ class Db
     /*
      * 连接数据库
      */
-	public function connect()
-	{
-		if ($this->isSubQuery) {
-			return;
-		}
+    public function connect()
+    {
+        if ($this->isSubQuery) {
+            return;
+        }
 
-		if (empty($this->hostname) && empty($this->socket)) {
-			throw new \Exception('MySQL host or socket is not set');
-		}
+        if (empty($this->hostname) && empty($this->socket)) {
+            throw new \Exception('MySQL host or socket is not set');
+        }
 
-		// mysqli的反射类 提取出关于类、方法、属性、参数等的详细信息，包括注释
-		$mysqlic = new \ReflectionClass('mysqli');
-		// 从给出的参数创建一个新的mysqli类实例
-		$mysqli = $mysqlic->newInstanceArgs([$this->hostname, $this->username, $this->password, $this->database, $this->port, $this->socket]);
+        // mysqli的反射类 提取出关于类、方法、属性、参数等的详细信息，包括注释
+        $mysqlic = new \ReflectionClass('mysqli');
+        // 从给出的参数创建一个新的mysqli类实例
+        $mysqli = $mysqlic->newInstanceArgs([$this->hostname, $this->username, $this->password, $this->database, $this->port, $this->socket]);
 
-		if ($mysqli->connect_error) {
-			throw new \Exception('Connect Error (' . $mysqli->connect_errno . ') ' . $mysqli->connect_error);
-		}
+        if ($mysqli->connect_error) {
+            throw new \Exception('Connect Error (' . $mysqli->connect_errno . ') ' . $mysqli->connect_error);
+        }
 
-		if (!empty($this->charset) && !$mysqli->set_charset($this->charset)) {
-			throw new \Exception('Error loading character set ' . $this->charset . ': ' . $mysqli->error);
-		}
+        if (!empty($this->charset) && !$mysqli->set_charset($this->charset)) {
+            throw new \Exception('Error loading character set ' . $this->charset . ': ' . $mysqli->error);
+        }
 
-		$this->dbLink = $mysqli;
-	}
+        $this->dbLink = $mysqli;
+    }
 
     /*
      * 关闭数据库
@@ -180,15 +180,15 @@ class Db
         return $this->dbLink;
     }
 
-	public function insert($insertData)
-	{
-		return $this->_buildInsert($insertData, 'INSERT');
-	}
+    public function insert($insertData)
+    {
+        return $this->_buildInsert($insertData, 'INSERT');
+    }
 
-	public function replace($insertData)
-	{
-		return $this->_buildInsert($insertData, 'REPLACE');
-	}
+    public function replace($insertData)
+    {
+        return $this->_buildInsert($insertData, 'REPLACE');
+    }
 
     public function update($tableData)
     {
@@ -306,20 +306,20 @@ class Db
         return $returnArray ? $returnRes : implode($symbol, $returnRes);
     }
 
-	private function _buildInsert($insertData, $operation)
-	{
-		if ($this->isSubQuery) {
-			return;
-		}
+    private function _buildInsert($insertData, $operation)
+    {
+        if ($this->isSubQuery) {
+            return;
+        }
 
-		// INSERT/REPLACE [LOW_PRIORITY | DELAYED] INTO tableName
-		$this->_query = $operation . ' ' . implode($this->_queryOptions) . ' INTO ' . $this->_tableName;
+        // INSERT/REPLACE [LOW_PRIORITY | DELAYED] INTO tableName
+        $this->_query = $operation . ' ' . implode($this->_queryOptions) . ' INTO ' . $this->_tableName;
 
-		// 拼装 Query
-		$stmt = $this->_buildQuery($insertData);
-		// 执行
-		$status = $stmt->execute();
-		// 错误信息
+        // 拼装 Query
+        $stmt = $this->_buildQuery($insertData);
+        // 执行
+        $status = $stmt->execute();
+        // 错误信息
         $this->_stmtError = $stmt->error;
         $this->_stmtErrno = $stmt->errno;
 
@@ -344,11 +344,11 @@ class Db
         }
 
         return true;
-	}
+    }
 
-	private function _buildQuery($tableData = null)
-	{
-		$this->_buildJoin();
+    private function _buildQuery($tableData = null)
+    {
+        $this->_buildJoin();
         $this->_buildDataQuery($tableData);
         $this->_buildCondition('WHERE', $this->_where);
         $this->_buildGroupBy();
@@ -382,20 +382,20 @@ class Db
         }
 
         return $stmt;
-	}
+    }
 
-	private function _buildJoin()
-	{
-		if (empty($this->_join)) {
-			return;
-		}
+    private function _buildJoin()
+    {
+        if (empty($this->_join)) {
+            return;
+        }
 
-		foreach ($this->_join as $data) {
-			list($joinType, $joinTable, $joinCondition) = $data;
+        foreach ($this->_join as $data) {
+            list($joinType, $joinTable, $joinCondition) = $data;
 
-			if (is_object($joinTable)) {
+            if (is_object($joinTable)) {
                 $joinStr = $this->_buildPair("", $joinTable);
-			} else {
+            } else {
                 $joinStr = $joinTable;
             }
             
@@ -409,36 +409,36 @@ class Db
                     $this->_conditionAnalysis($join_and_cond);
                 }
             }
-		}
-	}
+        }
+    }
 
-	private function _buildDataQuery($tableData)
-	{
-		if (!is_array($tableData)) {
-			return;
-		}
-
-		$isInsert = preg_match('/^[INSERT|REPLACE]/', $this->_query);
-		$dataColumns = array_keys($tableData);
-
-		if ($isInsert) {
-			if (!empty($dataColumns))
-				$this->_query .= ' (`' . implode($dataColumns, '`, `') . '`) ';
-			$this->_query .= ' VALUES (';
-		} else {
-			$this->_query .= ' SET ';
-		}
-
-		$this->_buildDataPairs($tableData, $dataColumns, $isInsert);
-
-		if ($isInsert) {
-			$this->_query .= ')';
-		}
-	}
-
-	private function _buildCondition($operator, &$conditions)
+    private function _buildDataQuery($tableData)
     {
-    	if (empty($conditions)) {
+        if (!is_array($tableData)) {
+            return;
+        }
+
+        $isInsert = preg_match('/^[INSERT|REPLACE]/', $this->_query);
+        $dataColumns = array_keys($tableData);
+
+        if ($isInsert) {
+            if (!empty($dataColumns))
+                $this->_query .= ' (`' . implode($dataColumns, '`, `') . '`) ';
+            $this->_query .= ' VALUES (';
+        } else {
+            $this->_query .= ' SET ';
+        }
+
+        $this->_buildDataPairs($tableData, $dataColumns, $isInsert);
+
+        if ($isInsert) {
+            $this->_query .= ')';
+        }
+    }
+
+    private function _buildCondition($operator, &$conditions)
+    {
+        if (empty($conditions)) {
             return;
         }
 
@@ -556,73 +556,73 @@ class Db
         return $this;
     }
 
-	// 建立数据对
-	private function _buildDataPairs($tableData, $dataColumns, $isInsert)
-	{
-		foreach ($dataColumns as $column) {
-			$value = $tableData[$column];
+    // 建立数据对
+    private function _buildDataPairs($tableData, $dataColumns, $isInsert)
+    {
+        foreach ($dataColumns as $column) {
+            $value = $tableData[$column];
 
-			// update field1 => `field1` t1.field2 => t1.`field2`
-			if (!$isInsert) {
-				if (strpos($column, '.') === false) {
-					$this->_query .= '`' . $column . '` = ';
-				} else {
-					$this->_query .= str_replace('.', '.`', $column) . '` = ';
-				}
-			}
+            // update field1 => `field1` t1.field2 => t1.`field2`
+            if (!$isInsert) {
+                if (strpos($column, '.') === false) {
+                    $this->_query .= '`' . $column . '` = ';
+                } else {
+                    $this->_query .= str_replace('.', '.`', $column) . '` = ';
+                }
+            }
 
-			// 判断是否为Db类的实例化  subquery value
-			if ($value instanceof Db) {
-				$this->_query .= $this->_buildPair('', $value) . ', ';
-				continue;
-			}
+            // 判断是否为Db类的实例化  subquery value
+            if ($value instanceof Db) {
+                $this->_query .= $this->_buildPair('', $value) . ', ';
+                continue;
+            }
 
-			// simple value
-			if (!is_array($value)) {
-				$this->_bindParam($value);
-				$this->_query .= '?, ';
-				continue;
-			}
+            // simple value
+            if (!is_array($value)) {
+                $this->_bindParam($value);
+                $this->_query .= '?, ';
+                continue;
+            }
 
-			// function value
-			$key = key($value);
-			$val = $value[$key];
-			switch ($key) {
-				case '[I]':
-					// ['field' => ['[I]' => '+1']]  =>  field = field + 1
-					$this->_query .= $column . $val . ', ';
-					break;
-				case '[F]':
-					// ['field' => ['[F]' => [time()]]] => field = time()
-					// ['field' => ['[F]' => [date(?), 'Y-m-d']]] => field = date(?)
-					$this->_query .= $val[0] . ', ';
-					if (!empty($val[1])) {
-						$this->_bindParams($val[1]);
-					}
-					break;
-				case '[N]':
-					if ($val == null) {
-						// ['field' => ['[N]' => [NULL]]] => field = !field
+            // function value
+            $key = key($value);
+            $val = $value[$key];
+            switch ($key) {
+                case '[I]':
+                    // ['field' => ['[I]' => '+1']]  =>  field = field + 1
+                    $this->_query .= $column . $val . ', ';
+                    break;
+                case '[F]':
+                    // ['field' => ['[F]' => [time()]]] => field = time()
+                    // ['field' => ['[F]' => [date(?), 'Y-m-d']]] => field = date(?)
+                    $this->_query .= $val[0] . ', ';
+                    if (!empty($val[1])) {
+                        $this->_bindParams($val[1]);
+                    }
+                    break;
+                case '[N]':
+                    if ($val == null) {
+                        // ['field' => ['[N]' => [NULL]]] => field = !field
                         $this->_query .= '!' . $column . ', ';
                     } else {
-						// ['field' => ['[N]' => [true]]] => field = false
+                        // ['field' => ['[N]' => [true]]] => field = false
                         $this->_query .= '!' . $val . ', ';
                     }
-					break;
-				default:
-					throw new \Exception("Wrong operation");
-					break;
-			}
-		}
+                    break;
+                default:
+                    throw new \Exception("Wrong operation");
+                    break;
+            }
+        }
 
-		// 去除最右侧","
-		$this->_query = rtrim($this->_query, ', ');
-	}
+        // 去除最右侧","
+        $this->_query = rtrim($this->_query, ', ');
+    }
 
-	// 建立对
-	private function _buildPair($operator, $value)
-	{
-		if (!is_object($value)) {
+    // 建立对
+    private function _buildPair($operator, $value)
+    {
+        if (!is_object($value)) {
             $this->_bindParam($value);
             return ' ' . $operator . ' ? ';
         }
@@ -632,7 +632,7 @@ class Db
         $this->_bindParams($subQuery['params']);
 
         return ' ' . $operator . ' (' . $subQuery['query'] . ') ' . $subQuery['alias'];
-	}
+    }
 
     /*
      * 创建子查询的 DB 对象
@@ -650,13 +650,13 @@ class Db
      * 获取子查询的信息
      * @return array
      */
-	public function getSubQuery()
-	{
-		if (!$this->isSubQuery) {
-			return;
-		}
+    public function getSubQuery()
+    {
+        if (!$this->isSubQuery) {
+            return;
+        }
 
-		array_shift($this->_bindParams);
+        array_shift($this->_bindParams);
 
         $val = [
             'query' => $this->_query,
@@ -667,15 +667,15 @@ class Db
         $this->reset();
 
         return $val;
-	}
+    }
 
-	private function _conditionToSql($operator, $value)
-	{
-		switch (strtolower($operator)) {
-			case 'not in':
-			case 'in':
-				$comparison = ' ' . $operator. ' (';
-				if (is_object($value)) {
+    private function _conditionToSql($operator, $value)
+    {
+        switch (strtolower($operator)) {
+            case 'not in':
+            case 'in':
+                $comparison = ' ' . $operator. ' (';
+                if (is_object($value)) {
                     $comparison .= $this->_buildPair("", $value);
                 } else {
                     foreach ($value as $v) {
@@ -685,33 +685,33 @@ class Db
                 }
 
                 $this->_query .= rtrim($comparison, ',').' ) ';
-				break;
-			case 'not between':
-			case 'between':
-				$this->_query .= ' ' . $operator . ' ? AND ? ';
+                break;
+            case 'not between':
+            case 'between':
+                $this->_query .= ' ' . $operator . ' ? AND ? ';
                 $this->_bindParams($value);
-				break;
-			case 'not exists':
-			case 'exists':
-				$this->_query .= ' ' . $operator . $this->_buildPair("", $value);
-				break;
-			default:
-				if (is_array($value)) {
+                break;
+            case 'not exists':
+            case 'exists':
+                $this->_query .= ' ' . $operator . $this->_buildPair("", $value);
+                break;
+            default:
+                if (is_array($value)) {
                     $this->_bindParams($value);
-				} elseif ($value === null) {
+                } elseif ($value === null) {
                     $this->_query .= $operator . " NULL";
-				} else if ($value != 'DBNULL' || $value == '0') {
+                } else if ($value != 'DBNULL' || $value == '0') {
                     $this->_query .= $this->_buildPair($operator, $value);
-				}
-		}
-	}
+                }
+        }
+    }
 
-	/*
-	 * 对于准备好的语句，需要使用此方法。
-	 * 他们需要要与“i”等绑定的字段的数据类型。
-	 * 此函数接受输入，确定输入的类型，然后更新param_type
-	 */
-	private function _determineType($item)
+    /*
+     * 对于准备好的语句，需要使用此方法。
+     * 他们需要要与“i”等绑定的字段的数据类型。
+     * 此函数接受输入，确定输入的类型，然后更新param_type
+     */
+    private function _determineType($item)
     {
         switch (gettype($item)) {
             case 'NULL':
@@ -732,13 +732,13 @@ class Db
         return '';
     }
 
-	private function _bindParam($value)
+    private function _bindParam($value)
     {
-    	if (isset($this->_bindParams[0])) {
-    		$this->_bindParams[0] .= $this->_determineType($value);
-    	} else {
-    		$this->_bindParams[0] = $this->_determineType($value);
-    	}
+        if (isset($this->_bindParams[0])) {
+            $this->_bindParams[0] .= $this->_determineType($value);
+        } else {
+            $this->_bindParams[0] = $this->_determineType($value);
+        }
         
         array_push($this->_bindParams, $value);
     }
@@ -752,7 +752,7 @@ class Db
 
     private function _prepareQuery()
     {
-    	// pdo 预处理
+        // pdo 预处理
         $stmt = $this->getDb()->prepare($this->_query);
         if ($stmt !== false) {
             if ($this->traceEnabled)
@@ -950,9 +950,9 @@ class Db
     {
         if ($this->traceEnabled) {
             $this->trace[] = [
-            	$this->_lastQuery,
-            	(microtime(true) - $this->traceStartQ),
-            	$this->_traceGetCaller()
+                $this->_lastQuery,
+                (microtime(true) - $this->traceStartQ),
+                $this->_traceGetCaller()
             ];
         }
 
@@ -983,7 +983,7 @@ class Db
      * 获取数据库连接
      * @return object
      */
-	public function getDB()
+    public function getDB()
     {
         if (!isset($this->dbLink)) {
             $this->connect();
@@ -996,11 +996,11 @@ class Db
      * 定义表前缀
      * @return object
      */
-	public function setPrefix($prefix = '')
-	{
-		$this->prefix = $prefix;
-		return $this;
-	}
+    public function setPrefix($prefix = '')
+    {
+        $this->prefix = $prefix;
+        return $this;
+    }
 
     /**
      * 获取表前缀
@@ -1011,24 +1011,24 @@ class Db
         return $this->prefix;
     }
 
-	/**
+    /**
      * 设置Query选项
      * @return object
      */
-	public function setQueryOption($options)
-	{
-		$allowedOptions = [
-			'ALL',
-			'DISTINCT',
-			'DISTINCTROW',
-			'HIGH_PRIORITY',
-			'STRAIGHT_JOIN',
-			'SQL_SMALL_RESULT',
-			'SQL_BIG_RESULT',
-			'SQL_BUFFER_RESULT',
-			'SQL_CACHE',
-			'SQL_NO_CACHE',
-			'SQL_CALC_FOUND_ROWS',
+    public function setQueryOption($options)
+    {
+        $allowedOptions = [
+            'ALL',
+            'DISTINCT',
+            'DISTINCTROW',
+            'HIGH_PRIORITY',
+            'STRAIGHT_JOIN',
+            'SQL_SMALL_RESULT',
+            'SQL_BIG_RESULT',
+            'SQL_BUFFER_RESULT',
+            'SQL_CACHE',
+            'SQL_NO_CACHE',
+            'SQL_CALC_FOUND_ROWS',
             'LOW_PRIORITY',
             'IGNORE',
             'QUICK',
@@ -1039,24 +1039,24 @@ class Db
         $options = is_array($options) ? $options : [$options];
 
         foreach ($options as $option) {
-        	$option = strtoupper($option);
-        	if (!in_array($option, $allowedOptions)) {
-        		throw new \Exception("EWrong query option: " . $option);
-        	}
-        	
-        	if ($option == 'MYSQLI_NESTJOIN') {
-        		$this->_nestJoin = true;
-        	} elseif ($option == 'FOR UPDATE') {
-        		$this->_forUpdate = true;
-        	} elseif ($option == 'LOCK IN SHARE MODE') {
-        		$this->_lockInShareMode = true;
-        	} else {
-        		$this->_queryOptions[] = $option;
-        	}
+            $option = strtoupper($option);
+            if (!in_array($option, $allowedOptions)) {
+                throw new \Exception("EWrong query option: " . $option);
+            }
+            
+            if ($option == 'MYSQLI_NESTJOIN') {
+                $this->_nestJoin = true;
+            } elseif ($option == 'FOR UPDATE') {
+                $this->_forUpdate = true;
+            } elseif ($option == 'LOCK IN SHARE MODE') {
+                $this->_lockInShareMode = true;
+            } else {
+                $this->_queryOptions[] = $option;
+            }
         }
 
         return $this;
-	}
+    }
 
     /*
      * 获取SQL结果集的同时获取SQL总记录数
@@ -1538,7 +1538,7 @@ class Db
         return $res;
     }
 
-	/**
+    /**
      * 获取最终执行的SQL
      * @return string
      */
