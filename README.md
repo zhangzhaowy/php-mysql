@@ -368,12 +368,12 @@ var_dump($db->trace);
 //     0 => [
 //         0 => 'SELECT * FROM my_users',
 //         1 => 0.020965814590454,
-//         2 => 'Zhangzhao\Phpmysql\Db->getAll() >>  file "**\controller\Test.php" line #214'
+//         2 => 'Zhangzhaowy\Phpmysql\Db->getAll() >>  file "**\controller\Test.php" line #214'
 //     ],
 //     1 => [
 //         0 => 'SELECT  id,name FROM my_users LIMIT 1',
 //         1 => 0.0006251335144043,
-//         2 => 'Zhangzhao\Phpmysql\Db->getOne() >>  file "**\controller\Test.php" line #215'
+//         2 => 'Zhangzhaowy\Phpmysql\Db->getOne() >>  file "**\controller\Test.php" line #215'
 //     ],
 // ]
 ```
