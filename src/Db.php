@@ -1712,4 +1712,8 @@ class Db
 
         return $res;
     }
+
+    // 帮助函数
+    
+    
 }
